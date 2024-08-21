@@ -6,6 +6,7 @@ import aiohttp
 import asyncio
 import requests
 import sys
+import time
 
 class Wiki():
     """
@@ -118,13 +119,24 @@ class Wiki():
         if ret != False:
             path = [self.title(link) for link in ret]
             print(path)
+
+            endTime = time.time()  # End timing after completing the search
+            elapsedTime = endTime - self.startTime
+            print(f"Total time taken for the program: {elapsedTime:.2f} seconds")
             sys.exit()
     
+    """
+    Calls A* search algorithm and prints out the path
+    """
     def aStar(self):
         ret = self.graph.aStar(self.start, self.end)
         if ret != False:
             path = [self.title(link) for link in ret]
             print(path)
+
+            endTime = time.time()  # End timing after completing the search
+            elapsedTime = endTime - self.startTime
+            print(f"Total time taken for the program: {elapsedTime:.2f} seconds")
             sys.exit()
 
     """
@@ -134,10 +146,14 @@ class Wiki():
         async with aiohttp.ClientSession() as session:
             self.session = session
             self.target = await self.getTitle(session, self.end)
+
+            self.startTime = time.time()  # Start timing before beginning the search
+
             await self.getHyperLinks()
+            
 
 start = "https://en.wikipedia.org/wiki/Whale_shark"
-end = "https://en.wikipedia.org/wiki/Flying_fish"
+end = "https://en.wikipedia.org/wiki/Organ_(biology)"
 
 whaleShark = Wiki(start, end)
 asyncio.run(whaleShark.run())
