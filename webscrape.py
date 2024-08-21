@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from bfs import Graph
 import requests
+import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class Wiki():
     """
@@ -8,16 +10,20 @@ class Wiki():
     """
     def __init__(self, start, end):
         # Start wiki page
-        self.startPage = requests.get(start)
-        self.startSoup = BeautifulSoup(self.startPage.content, 'html.parser')
+        self.page = requests.get(start)
+        self.soup = BeautifulSoup(self.page.content, 'html.parser')
 
-        self.start = self.getTitle(start)
+        self.start = start
         self.target = self.getTitle(end)
 
         self.current = start
         self.end = end
 
         self.graph = Graph(self.end)
+
+        self.count = 0
+        self.links = []
+        self.visited = set()  # Track visited pages
     
     """
     Returns the title of a Wikipedia article
@@ -39,7 +45,10 @@ class Wiki():
     Only gets other Wikipedia links and ignores footnotes and references
     """
     def getHyperLinks(self):
-        object = self.startSoup.find(id="mw-content-text")
+        print("Currently searching " + self.getTitle(self.current))
+        self.visited.add(self.current)
+
+        object = self.soup.find(id="mw-content-text")
         items = object.find_all('a')
         for item in items:
             output = item.prettify()
@@ -49,22 +58,41 @@ class Wiki():
             chars = set('0123456789[@_!#$%^&*<>?/\|}{~:]')
             if not any((c in chars) for c in text):
                 link = item.get('href')
-                if '/wiki' in link and 'https' not in link:
+                if link and'/wiki' in link and 'https' not in link:
                     fullLink = 'https://en.wikipedia.org' + link
-                    self.graph.addEdge(self.current, fullLink)
+                    if fullLink not in self.visited:
+                        self.graph.addEdge(self.current, fullLink)
+                        self.links.append(fullLink)
+
+        # if self.links:
+        self.count += 1
+
+        if self.links[0] not in self.visited:
+            self.current = self.links[0]
+
+        self.links.pop(0)
+
+        self.page = requests.get(self.current)
+        self.soup = BeautifulSoup(self.page.content, 'html.parser')
+
+        if self.count % 2 == 0:
+            self.search()
+            print("Checking for matches...")
         
+        self.getHyperLinks()
+            
+    """
+    Calls BFS algorithm and prints out the path
+    """
     def search(self):
-        ret = self.graph.bfs(self.current, self.end)
-        path = []
-        for link in ret:
-            title = self.getTitle(link)
-            path.append(title)
-        
-        print(path)
+        ret = self.graph.bfs(self.start, self.end)
+        if ret != False:
+            path = [self.getTitle(link) for link in ret]
+            print(path)
+            sys.exit()
 
 start = "https://en.wikipedia.org/wiki/Whale_shark"
-end = "https://en.wikipedia.org/wiki/Baleen_whale"
+end = "https://en.wikipedia.org/wiki/Cetacea"
 
 whaleShark = Wiki(start, end)
 whaleShark.getHyperLinks()
-whaleShark.search()
