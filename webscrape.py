@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from bfs import Graph
+# from bfs import Graph
+from aStar import Graph
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import aiohttp
 import asyncio
@@ -86,7 +87,8 @@ class Wiki():
         if self.links:
             self.current = self.links.pop(0)
             if self.count % 2 == 0:
-                self.search()
+                # self.bfs()
+                self.aStar()
                 print("Checking for matches...")
             
             await self.getHyperLinks()
@@ -111,8 +113,15 @@ class Wiki():
     """
     Calls BFS algorithm and prints out the path
     """
-    def search(self):
+    def bfs(self):
         ret = self.graph.bfs(self.start, self.end)
+        if ret != False:
+            path = [self.title(link) for link in ret]
+            print(path)
+            sys.exit()
+    
+    def aStar(self):
+        ret = self.graph.aStar(self.start, self.end)
         if ret != False:
             path = [self.title(link) for link in ret]
             print(path)
