@@ -23,6 +23,7 @@ class Wiki():
         self.end = end
 
         self.graph = Graph(self.end)
+        # self.graph = Graph(self.title(end))
 
         self.count = 0
         self.links = []
@@ -82,6 +83,7 @@ class Wiki():
                 if fullLink and fullLink not in self.visited:
                     self.graph.addEdge(self.current, fullLink)
                     self.links.append(fullLink)
+                    self.visited.add(fullLink)
 
         self.count += 1
 
@@ -110,6 +112,15 @@ class Wiki():
                 fullLink = 'https://en.wikipedia.org' + link
                 return fullLink
         return None
+    
+    # def parseCategories(self, soup):
+    #     cats = set()
+    #     object = soup.find(id="mw-normal-catlinks")
+    #     items = object.find_all('li')
+    #     if items:
+    #         for li in items:
+    #             cats.add(li.text.strip())
+    #     return cats
             
     """
     Calls BFS algorithm and prints out the path
