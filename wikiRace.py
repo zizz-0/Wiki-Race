@@ -1,12 +1,12 @@
-from bs4 import BeautifulSoup
-# from bfs import Graph
-from aStar import Graph
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import aiohttp
 import asyncio
 import requests
 import sys
 import time
+from bs4 import BeautifulSoup
+# from bfs import Graph
+from aStar import Graph
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class Wiki():
     """
@@ -82,6 +82,7 @@ class Wiki():
                 fullLink = future.result()
                 if fullLink and fullLink not in self.visited:
                     self.graph.addEdge(self.current, fullLink)
+                    # self.graph.addEdge(self.getTitle(self.session, self.current), self.getTitle(self.session, fullLink))
                     self.links.append(fullLink)
                     self.visited.add(fullLink)
 
@@ -89,10 +90,10 @@ class Wiki():
 
         if self.links:
             self.current = self.links.pop(0)
-            if self.count % 2 == 0:
+            if self.count % 5 == 0:
+                print("Checking for matches...")
                 # self.bfs()
                 self.aStar()
-                print("Checking for matches...")
             
             await self.getHyperLinks()
 
@@ -133,21 +134,22 @@ class Wiki():
 
             endTime = time.time()  # End timing after completing the search
             elapsedTime = endTime - self.startTime
-            print(f"Total time taken for the program: {elapsedTime:.2f} seconds")
+            print(f"Time alloted: {elapsedTime:.2f} seconds")
             sys.exit()
     
     """
     Calls A* search algorithm and prints out the path
     """
     def aStar(self):
-        ret = self.graph.aStar(self.start, self.end)
-        if ret != False:
+        future = self.graph.search(self.start, self.end)
+        ret = future.result() if future else None
+        if ret != False and ret != None:
             path = [self.title(link) for link in ret]
             print(path)
 
             endTime = time.time()  # End timing after completing the search
             elapsedTime = endTime - self.startTime
-            print(f"Total time taken for the program: {elapsedTime:.2f} seconds")
+            print(f"Time alloted: {elapsedTime:.2f} seconds")
             sys.exit()
 
     """
@@ -162,9 +164,8 @@ class Wiki():
 
             await self.getHyperLinks()
             
-
 start = "https://en.wikipedia.org/wiki/Whale_shark"
-end = "https://en.wikipedia.org/wiki/Organ_(biology)"
+end = "https://en.wikipedia.org/wiki/Acipenseriformes"
 
 whaleShark = Wiki(start, end)
 asyncio.run(whaleShark.run())

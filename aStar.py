@@ -1,5 +1,6 @@
 import heapq
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 
 class Graph:
 
@@ -15,7 +16,6 @@ class Graph:
 
     """
     Heuristic function to estimate the distance from the current node to the target
-    For simplicity, we'll use the length of the article title as a heuristic, but this can be improved.
     """
     def heuristic(self, node, end):
         # Placeholder heuristic: title lengths
@@ -33,27 +33,37 @@ class Graph:
     
     """
     A* search algorithm implementation
+    Uses threading to speed up search
     """
-    def aStar(self, start, end):
-        parent = {}
-        gScore = {start: 0}
-        fScore = {start: self.heuristic(start, end)}
-        openSet = []
-        heapq.heappush(openSet, (fScore[start], start))
+    def search(self, start, end, use_threading=True):
+        def aStar():
+            parent = {}
+            gScore = {start: 0}
+            fScore = {start: self.heuristic(start, end)}
+            openSet = []
+            heapq.heappush(openSet, (fScore[start], start))
 
-        while openSet:
-            _, node = heapq.heappop(openSet)
+            while openSet:
+                _, node = heapq.heappop(openSet)
 
-            if node == end:
-                return self.backtrace(parent, start, end)
+                if node == end:
+                    return self.backtrace(parent, start, end)
 
-            for adjacent in self.graph.get(node, []):
-                tentativeGScore = gScore[node] + 1  # Assume each edge has a weight of 1
+                for adjacent in self.graph.get(node, []):
+                    tentativeGScore = gScore[node] + 1  # Assume each edge has a weight of 1
 
-                if adjacent not in gScore or tentativeGScore < gScore[adjacent]:
-                    parent[adjacent] = node
-                    gScore[adjacent] = tentativeGScore
-                    fScore[adjacent] = tentativeGScore + self.heuristic(adjacent, end)
-                    heapq.heappush(openSet, (fScore[adjacent], adjacent))
-        
-        return False
+                    if adjacent not in gScore or tentativeGScore < gScore[adjacent]:
+                        parent[adjacent] = node
+                        gScore[adjacent] = tentativeGScore
+                        fScore[adjacent] = tentativeGScore + self.heuristic(adjacent, end)
+                        heapq.heappush(openSet, (fScore[adjacent], adjacent))
+
+            return False
+
+        if use_threading:
+            with ThreadPoolExecutor(max_workers=20) as executor:
+                future = executor.submit(aStar)
+                return future
+        else:
+            # Run directly without threading for comparison
+            return aStar()
