@@ -141,8 +141,8 @@ class Wiki():
     Calls A* search algorithm and prints out the path
     """
     def aStar(self):
-        future = self.graph.search(self.start, self.end)
-        ret = future.result() if future else None
+        ret = self.graph.search(self.start, self.end)
+        # ret = future.result() if future else None
         if ret != False and ret != None:
             path = [self.title(link) for link in ret]
             print(path)
@@ -165,7 +165,7 @@ class Wiki():
             await self.getHyperLinks()
             
 start = "https://en.wikipedia.org/wiki/Whale_shark"
-end = "https://en.wikipedia.org/wiki/Acipenseriformes"
+end = "https://en.wikipedia.org/wiki/Formula_One"
 
 whaleShark = Wiki(start, end)
 asyncio.run(whaleShark.run())

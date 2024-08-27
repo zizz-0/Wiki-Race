@@ -35,7 +35,7 @@ class Graph:
     A* search algorithm implementation
     Uses threading to speed up search
     """
-    def search(self, start, end, use_threading=True):
+    def search(self, start, end, use_threading=False):
         def aStar():
             parent = {}
             gScore = {start: 0}
@@ -61,7 +61,7 @@ class Graph:
             return False
 
         if use_threading:
-            with ThreadPoolExecutor(max_workers=20) as executor:
+            with ThreadPoolExecutor(max_workers=10) as executor:
                 future = executor.submit(aStar)
                 return future
         else:
