@@ -25,5 +25,3 @@ Currently, `wikiRace.py` is using A* Search with title lengths as estimate cost 
 
 ## Future Goals
 In the near future, `aStar.py` will be optimized using a better cost estimation for the heuristic function. This will increase the overall speed and efficiency of the program. One possibility I will be looking into is comparing Wikipedia article categories and checking for overlap.
-
-`wikiRace.py` will also be modified to ask for user input to get the start and end Wikipedia articles.

@@ -163,9 +163,43 @@ class Wiki():
             self.startTime = time.time()  # Start timing before beginning the search
 
             await self.getHyperLinks()
-            
-start = "https://en.wikipedia.org/wiki/Whale_shark"
-end = "https://en.wikipedia.org/wiki/Formula_One"
 
-whaleShark = Wiki(start, end)
-asyncio.run(whaleShark.run())
+"""
+Checks if a Wikipedia link is valid by checking the HTTP status code
+"""
+def linkValid(link):
+    response = requests.get(link)
+    return response.status_code == 200
+
+"""
+Converts a Wikipedia page title to a Wikipedia link
+"""
+def titleToLink(title):
+    formattedTitle = title.strip().replace(" ", "_")
+    return f"https://en.wikipedia.org/wiki/{formattedTitle}"
+
+"""
+Receives user input for start and end articles
+"""
+def userInput():
+    start = input("Enter start wiki page title: ")
+    startLink = titleToLink(start)
+    if(not linkValid(startLink)):
+        print(startLink, " is invalid\n")
+        userInput()
+        sys.exit
+
+    end = input("Enter start wiki page title: ")
+    endLink = titleToLink(end)
+    if(not linkValid(endLink)):
+        print(endLink, " is invalid\n")
+        userInput()
+        sys.exit
+
+    print("\nStart: ", startLink, "\nEnd: ", endLink, "\n")
+    time.sleep(1)
+    
+    path = Wiki(titleToLink(start), titleToLink(end))
+    asyncio.run(path.run())
+
+userInput()
