@@ -30,12 +30,12 @@ class Graph:
     """
     def backtrace(self, parent, start, end):
         path = [end]
-        # self.exploredEdges = []  # Clear explored edges
+        self.exploredEdges = []  # Clear explored edges -- comment out to show all edges
         while path[-1] != start:
             currentNode = path[-1]
             if currentNode in parent:
                 parentNode = parent[currentNode]
-                # self.exploredEdges.append((self.getWikiTitle(parentNode), self.getWikiTitle(currentNode)))  # Store the edge
+                self.exploredEdges.append((self.getWikiTitle(parentNode), self.getWikiTitle(currentNode)))  # Store the edge -- comment out to show all edges
                 path.append(parentNode)
             else:
                 print(f"Error: Parent of node {currentNode} not found. Aborting path reconstruction.")
@@ -95,17 +95,21 @@ class Graph:
     Visualizes the search graph using NetworkX
     """
     def visualizeGraph(self, pathEdges):
-        G = nx.DiGraph()  # Create a directed graph
+        G = nx.DiGraph()
 
         for edge in self.exploredEdges:
             G.add_edge(edge[0], edge[1])
         
+        # Layout for visual appearance
         plt.figure(figsize=(10, 8))
-        pos = nx.spring_layout(G, k=5, scale=300, center=[0,0], iterations=5)  # Layout for visual appearance
+        # pos = nx.spring_layout(G, k=5, scale=300, center=[0,0], iterations=5) # Uncomment for all edges
+        pos = nx.spring_layout(G, k=0.5) # Comment out for all edges
 
-        nx.draw(G, pos, with_labels=True, node_size=150, node_color='lightblue', font_size=5, font_weight='bold', edge_color='gray')
+        # nx.draw(G, pos, with_labels=True, node_size=150, node_color='lightblue', font_size=5, font_weight='bold', edge_color='gray') # Uncomment for all edges
+        nx.draw(G, pos, with_labels=True, node_size=300, node_color='lightblue', font_size=10, font_weight='bold', edge_color='gray') # Comment out for all edges
 
-        path_edges_to_draw = [(self.getWikiTitle(start), self.getWikiTitle(end)) for start, end in pathEdges]
-        nx.draw_networkx_edges(G, pos, edgelist=path_edges_to_draw, edge_color='red', width=2.5)
+         # Uncomment for all edges
+        # path_edges_to_draw = [(self.getWikiTitle(start), self.getWikiTitle(end)) for start, end in pathEdges] 
+        # nx.draw_networkx_edges(G, pos, edgelist=path_edges_to_draw, edge_color='red', width=2.5)
 
         plt.show()
