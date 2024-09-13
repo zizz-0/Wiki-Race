@@ -150,6 +150,11 @@ class Wiki():
             endTime = time.time()  # End timing after completing the search
             elapsedTime = endTime - self.startTime
             print(f"Time alloted: {elapsedTime:.2f} seconds")
+
+            # Visualize the search graph after the path is found
+            pathEdges = [(ret[i], ret[i + 1]) for i in range(len(ret) - 1)]
+            self.graph.visualizeGraph(pathEdges)
+
             sys.exit()
 
     """
@@ -175,7 +180,7 @@ def linkValid(link):
 Converts a Wikipedia page title to a Wikipedia link
 """
 def titleToLink(title):
-    formattedTitle = title.strip().replace(" ", "_")
+    formattedTitle = title.strip().lower().capitalize().replace(" ", "_")
     return f"https://en.wikipedia.org/wiki/{formattedTitle}"
 
 """
@@ -189,7 +194,7 @@ def userInput():
         userInput()
         sys.exit
 
-    end = input("Enter start wiki page title: ")
+    end = input("Enter end wiki page title: ")
     endLink = titleToLink(end)
     if(not linkValid(endLink)):
         print(endLink, " is invalid\n")
@@ -202,4 +207,10 @@ def userInput():
     path = Wiki(titleToLink(start), titleToLink(end))
     asyncio.run(path.run())
 
-userInput()
+# userInput()
+
+start = "https://en.wikipedia.org/wiki/Whale_shark"
+end = "https://en.wikipedia.org/wiki/Cosmopolitan_distribution"
+
+whaleShark = Wiki(start, end)
+asyncio.run(whaleShark.run())
