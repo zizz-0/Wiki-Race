@@ -210,7 +210,7 @@ def userInput():
 # userInput()
 
 start = "https://en.wikipedia.org/wiki/Whale_shark"
-end = "https://en.wikipedia.org/wiki/Pest_control"
+end = "https://en.wikipedia.org/wiki/Organ_(biology)"
 
 whaleShark = Wiki(start, end)
 asyncio.run(whaleShark.run())
