@@ -97,7 +97,7 @@ class Graph:
     """
     Visualizes the search graph using NetworkX
     """
-    def visualizeGraph(self, pathEdges, allotedTime, threshold=5, maxEdges=300):
+    def visualizeGraph(self, pathEdges, path, allotedTime, threshold=5, maxEdges=300):
         G = nx.DiGraph()
 
         # To store start and end nodes to make red
@@ -153,6 +153,5 @@ class Graph:
             fontWeight = 'bold' if node in startEndNodes else 'normal'
             nx.draw_networkx_labels(G, pos, labels={node: label}, font_color=fontColor, font_weight=fontWeight, font_size=5)
 
-        path = " > ".join(str(r) for r in reversed(startEndNodes))
         plt.suptitle(f"Wiki Race: {path}\n{nodeCount} articles explored, {maxEdges} articles displayed | Search Time: {allotedTime:.2f} seconds", fontsize='small')
         plt.show()
