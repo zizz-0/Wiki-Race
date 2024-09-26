@@ -97,20 +97,26 @@ class Graph:
     """
     Visualizes the search graph using NetworkX
     """
-    def visualizeGraph(self, pathEdges, threshold=5, maxEdges=300):
+    def visualizeGraph(self, pathEdges, allotedTime, threshold=5, maxEdges=300):
         G = nx.DiGraph()
 
         # To store start and end nodes to make red
-        start_end_nodes = set()
+        startEndNodes =[]
+
+        # Getting count of nodes
+        nodeCount = 0
+        for edge in self.exploredEdges:
+            nodeCount += 1
 
         for start, end in pathEdges:
-            start_node = self.getWikiTitle(start)
-            end_node = self.getWikiTitle(end)
-            G.add_node(start_node)  # Add start node
-            G.add_node(end_node)    # Add end node
-            start_end_nodes.add(start_node)
-            start_end_nodes.add(end_node)
+            startNode = self.getWikiTitle(start)
+            endNode = self.getWikiTitle(end)
+            G.add_node(startNode)  # Add start node
+            G.add_node(endNode)    # Add end node
+            startEndNodes.append(startNode)
+            startEndNodes.append(endNode)
 
+        # Adds nodes to graph -- only nodes below a threshold number and up to a max count
         edgeCount = 0
         for edge in self.exploredEdges:
             edge_cost = self.edge_cost.get(edge, float('inf'))
@@ -125,27 +131,28 @@ class Graph:
         plt.figure(figsize=(10, 8))
         pos = nx.spring_layout(G)
 
-        node_colors = []
+        nodeColors = []
         for node in G.nodes:
-            if node in start_end_nodes:
+            if node in startEndNodes:
                 # Final path
-                node_colors.append('red')
+                nodeColors.append('red')
             else:
-                node_colors.append('lightblue')
+                nodeColors.append('lightblue')
 
         # Draws graph without labels
-        nx.draw(G, pos, with_labels=False, node_size=150, node_color=node_colors, edge_color='lightgray') # Uncomment for all edges
-        # nx.draw(G, pos, with_labels=True, node_size=300, node_color='lightblue', font_size=10, font_weight='bold', edge_color='gray') # Comment out for all edges
+        nx.draw(G, pos, with_labels=False, node_size=150, node_color=nodeColors, edge_color='lightgray') # Uncomment for all edges
 
         # Draws final path edges in red
-        path_edges_to_draw = [(self.getWikiTitle(start), self.getWikiTitle(end)) for start, end in pathEdges] 
-        nx.draw_networkx_edges(G, pos, edgelist=path_edges_to_draw, edge_color='red', width=1.5)
+        pathEdgesToDraw = [(self.getWikiTitle(start), self.getWikiTitle(end)) for start, end in pathEdges] 
+        nx.draw_networkx_edges(G, pos, edgelist=pathEdgesToDraw, edge_color='red', width=1.5)
 
         # Adds node labels
         labels = {node: node for node in G.nodes}
         for node, label in labels.items():
-            font_color = 'black' if node in start_end_nodes else 'dimgray'
-            font_weight = 'bold' if node in start_end_nodes else 'normal'
-            nx.draw_networkx_labels(G, pos, labels={node: label}, font_color=font_color, font_weight=font_weight, font_size=5)
+            fontColor = 'black' if node in startEndNodes else 'dimgray'
+            fontWeight = 'bold' if node in startEndNodes else 'normal'
+            nx.draw_networkx_labels(G, pos, labels={node: label}, font_color=fontColor, font_weight=fontWeight, font_size=5)
 
+        path = " > ".join(str(r) for r in reversed(startEndNodes))
+        plt.suptitle(f"Wiki Race: {path}\n{nodeCount} articles explored, {maxEdges} articles displayed | Search Time: {allotedTime:.2f} seconds", fontsize='small')
         plt.show()

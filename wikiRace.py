@@ -153,7 +153,7 @@ class Wiki():
 
             # Visualize the search graph after the path is found
             pathEdges = [(ret[i], ret[i + 1]) for i in range(len(ret) - 1)]
-            self.graph.visualizeGraph(pathEdges)
+            self.graph.visualizeGraph(pathEdges, elapsedTime)
 
             sys.exit()
 
