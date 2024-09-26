@@ -20,8 +20,19 @@ After testing with BFS, I switched over to A* Search. `aStar.py` was originally 
 
 After determining A* would be a better overall search algorithm to use for this program, I tried to find a better method of estimating cost for the heuristic function. The first idea tested was using ![Wikipedia2vec](https://wikipedia2vec.github.io/wikipedia2vec/), which is a model of word2vec (which obtains vector representations of words) that was specifically trained on Wikipedia articles. However, even with threading, this method was too complex and increased the speed exponentially since it was vectorizing each Wikipedia article title. The search that took A* using title lengths as a comparison 4 seconds (Whale Shark > Filter Feeder > Organ (biology)) took A* using Wikipedia2vec **488 seconds.**
 
+## Visualizing Graph
+After completing the search, the graph is visualized using ![NetworkX](https://networkx.org/) and ![Matplotlib Pyplot](https://matplotlib.org/3.5.3/api/_as_gen/matplotlib.pyplot.html). Because the search is so complex due to the threading, displaying all nodes makes the graph *very* unreadable. I tried out three different functions to see which was the easiest to read and made the most sense visually. I also added constraints, like setting a maximum number of nodes or a threshold for nodes based on heuristics.
+
+![spring layout](imgs/springLayout.png)
+![shell layout](imgs/shellLayout.png)
+![planar layout](imgs/planarLayout.png)
+
+While adding a maximum number of nodes removes the aspect of just how complex the graph is, it is the most readable. The final visualized graph ended up being a shell layout graph with a maximum of 300 nodes and a threshold of 5 (this can change depending on the heuristic).
+
+![visualized graph](imgs/final_thresholdMaxEdgesSpringLayout.png)
+
 ## Current Status
-Currently, `wikiRace.py` is using A* Search with title lengths as estimate cost comparison.  `wikiRace.py` is threaded with 20 max workers, and `aStar.py` is threaded with 10 max workers, but defaults to using no threading.
+Currently, `wikiRace.py` is using A* Search with title lengths as estimate cost comparison. `wikiRace.py` is threaded with 20 max workers, and `aStar.py` is threaded with 10 max workers, but defaults to using no threading.
 
 ## Future Goals
 In the near future, `aStar.py` will be optimized using a better cost estimation for the heuristic function. This will increase the overall speed and efficiency of the program. One possibility I will be looking into is comparing Wikipedia article categories and checking for overlap.
