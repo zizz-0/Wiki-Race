@@ -1,10 +1,11 @@
 import heapq
-from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor
 import matplotlib.pyplot as plt
 import networkx as nx
 import urllib.parse
-import time
+import requests
+from bs4 import BeautifulSoup
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 
 class Graph:
 
@@ -12,7 +13,7 @@ class Graph:
         self.graph = defaultdict(list)
         self.target = target
         self.exploredEdges = []  # Store explored edges
-        self.edge_cost = {}  # To store the cost for each explored edge
+        self.edgeCost = {}  # To store the cost for each explored edge
 
     """
     Adds edge to a graph
@@ -25,8 +26,27 @@ class Graph:
     """
     def heuristic(self, node, end):
         # Placeholder heuristic: title lengths
-        return abs(len(node) - len(end))
-
+        # return abs(len(node) - len(end))
+        str1 = node.replace('https://en.wikipedia.org', '')
+        str2 = end.replace('https://en.wikipedia.org', '')
+        h = self.longestCommonSubstr(str1, str2)
+    
+        # Return -h since A* minimizes cost
+        return -h
+    
+    def longestCommonSubstr(self, str1, str2):
+        m, n = len(str1), len(str2)
+        table = [[0] * (n + 1) for _ in range(m + 1)]
+        longest = 0
+        
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if str1[i - 1] == str2[j - 1]:
+                    table[i][j] = table[i - 1][j - 1] + 1
+                    longest = max(longest, table[i][j])
+        
+        return longest
+    
     """
     Backtraces to find and return path
     """
@@ -49,7 +69,7 @@ class Graph:
     A* search algorithm implementation
     Uses threading to speed up search
     """
-    def search(self, start, end, use_threading=False):
+    def search(self, start, end, use_threading=True):
         def aStar():
             parent = {}
             gScore = {start: 0}
@@ -73,12 +93,12 @@ class Graph:
                         heapq.heappush(openSet, (fScore[adjacent], adjacent))
 
                         self.exploredEdges.append((self.getWikiTitle(node), self.getWikiTitle(adjacent)))
-                        self.edge_cost[(self.getWikiTitle(node), self.getWikiTitle(adjacent))] = fScore[adjacent] * 1.5 # Store edge cost
+                        self.edgeCost[(self.getWikiTitle(node), self.getWikiTitle(adjacent))] = fScore[adjacent] * 1.5 # Store edge cost
 
             return False
 
         if use_threading:
-            with ThreadPoolExecutor(max_workers=10) as executor:
+            with ThreadPoolExecutor(max_workers=20) as executor:
                 future = executor.submit(aStar)
                 return future
         else:
@@ -119,10 +139,10 @@ class Graph:
         # Adds nodes to graph -- only nodes below a threshold number and up to a max count
         edgeCount = 0
         for edge in self.exploredEdges:
-            edge_cost = self.edge_cost.get(edge, float('inf'))
+            edgeCost = self.edgeCost.get(edge, float('inf'))
             if maxEdges is not None and edgeCount >= maxEdges:
                 break
-            if threshold is None or edge_cost < threshold:
+            if threshold is None or edgeCost < threshold:
                 G.add_edge(edge[0], edge[1])
                 edgeCount += 1
                 

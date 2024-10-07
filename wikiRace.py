@@ -4,7 +4,6 @@ import requests
 import sys
 import time
 from bs4 import BeautifulSoup
-# from bfs import Graph
 from aStar import Graph
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -23,28 +22,38 @@ class Wiki():
         self.end = end
 
         self.graph = Graph(self.end)
-        # self.graph = Graph(self.title(end))
 
         self.count = 0
         self.links = []
         self.visited = set()  # Track visited pages
+        self.pageCache = {}  # Cache to store page content
+        self.titleCache = {}  # Cache to store titles
     
     """
     Makes a GET request to specified URL using a specific session to handle multiple HTTP requests at once
     """
     async def fetch(self, session, url):
+        if url in self.pageCache:
+            return self.pageCache[url]
+        
         async with session.get(url) as response:
-            return await response.text()
+            content = await response.text()
+            self.pageCache[url] = content
+            return content
     
     """
     Returns the title of a Wikipedia article -- THREADED
     """
     async def getTitle(self, session, link):
+        if link in self.titleCache:
+            return self.titleCache[link]
+        
         content = await self.fetch(session, link)
         soup = BeautifulSoup(content, 'html.parser')
         items = soup.find_all(class_="firstHeading")
-        
+
         result = items[0]
+        self.titleCache[link] = result
         return result.text.strip()
     
     """
@@ -82,7 +91,6 @@ class Wiki():
                 fullLink = future.result()
                 if fullLink and fullLink not in self.visited:
                     self.graph.addEdge(self.current, fullLink)
-                    # self.graph.addEdge(self.getTitle(self.session, self.current), self.getTitle(self.session, fullLink))
                     self.links.append(fullLink)
                     self.visited.add(fullLink)
 
@@ -92,7 +100,6 @@ class Wiki():
             self.current = self.links.pop(0)
             if self.count % 5 == 0:
                 print("Checking for matches...")
-                # self.bfs()
                 self.aStar()
             
             await self.getHyperLinks()
@@ -106,7 +113,7 @@ class Wiki():
         split = output.splitlines()
         text = split[1].strip()
 
-        chars = set('0123456789[@_!#$%^&*<>?/\|}{~:]')
+        chars = set('[@_!#$%^&*<>?/\|}{~:]')
         if not any((c in chars) for c in text):
             link = item.get('href')
             if link and '/wiki' in link and 'https' not in link:
@@ -141,8 +148,8 @@ class Wiki():
     Calls A* search algorithm and prints out the path
     """
     def aStar(self):
-        ret = self.graph.search(self.start, self.end)
-        # ret = future.result() if future else None
+        future = self.graph.search(self.start, self.end)
+        ret = future.result() if future else None
         if ret != False and ret != None:
             path = [self.title(link) for link in ret]
             print(path)
