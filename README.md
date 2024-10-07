@@ -27,7 +27,7 @@ After completing the search, the graph is visualized using ![NetworkX](https://n
 ![shell layout](imgs/shellLayout.png)
 ![planar layout](imgs/planarLayout.png)
 
-While adding a maximum number of nodes removes the aspect of just how complex the graph is, it is the most readable. The final visualized graph ended up being a shell layout graph with a maximum of 300 nodes and a threshold of 5 (this can change depending on the heuristic).
+While adding a maximum number of nodes removes the aspect of just how complex the graph is, it is the most readable. The final visualized graph ended up being a spring layout graph with a maximum of 300 nodes and a threshold of 5 (this can change depending on the heuristic).
 
 ![visualized graph](imgs/final_thresholdMaxEdgesSpringLayout.png)
 
