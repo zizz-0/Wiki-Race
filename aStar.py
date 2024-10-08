@@ -2,8 +2,6 @@ import heapq
 import matplotlib.pyplot as plt
 import networkx as nx
 import urllib.parse
-import requests
-from bs4 import BeautifulSoup
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
@@ -27,11 +25,11 @@ class Graph:
     def heuristic(self, node, end):
         # Placeholder heuristic: title lengths
         # return abs(len(node) - len(end))
+
         str1 = node.replace('https://en.wikipedia.org', '')
         str2 = end.replace('https://en.wikipedia.org', '')
         h = self.longestCommonSubstr(str1, str2)
     
-        # Return -h since A* minimizes cost
         return -h
     
     def longestCommonSubstr(self, str1, str2):
@@ -69,7 +67,7 @@ class Graph:
     A* search algorithm implementation
     Uses threading to speed up search
     """
-    def search(self, start, end, use_threading=True):
+    def search(self, start, end, use_threading=False):
         def aStar():
             parent = {}
             gScore = {start: 0}
@@ -117,7 +115,7 @@ class Graph:
     """
     Visualizes the search graph using NetworkX
     """
-    def visualizeGraph(self, pathEdges, path, allotedTime, threshold=5, maxEdges=300):
+    def visualizeGraph(self, pathEdges, path, allotedTime, threshold=2, maxEdges=300):
         G = nx.DiGraph()
 
         # To store start and end nodes to make red
@@ -173,5 +171,5 @@ class Graph:
             fontWeight = 'bold' if node in startEndNodes else 'normal'
             nx.draw_networkx_labels(G, pos, labels={node: label}, font_color=fontColor, font_weight=fontWeight, font_size=5)
 
-        plt.suptitle(f"Wiki Race: {path}\n{nodeCount} articles explored, {maxEdges} articles displayed | Search Time: {allotedTime:.2f} seconds", fontsize='small')
+        plt.suptitle(f"Wiki Race: {path}\n{nodeCount} articles explored, {edgeCount} articles displayed | Search Time: {allotedTime:.2f} seconds", fontsize='small')
         plt.show()

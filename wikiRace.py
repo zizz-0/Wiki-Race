@@ -8,6 +8,7 @@ from aStar import Graph
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class Wiki():
+
     """
     Gets the start and end pages and creates a BFS graph to search for the end page
     """
@@ -28,6 +29,8 @@ class Wiki():
         self.visited = set()  # Track visited pages
         self.pageCache = {}  # Cache to store page content
         self.titleCache = {}  # Cache to store titles
+        
+        self.thread = False
     
     """
     Makes a GET request to specified URL using a specific session to handle multiple HTTP requests at once
@@ -148,8 +151,14 @@ class Wiki():
     Calls A* search algorithm and prints out the path
     """
     def aStar(self):
-        future = self.graph.search(self.start, self.end)
-        ret = future.result() if future else None
+        global thread
+
+        if thread is True:
+            future = self.graph.search(self.start, self.end, thread)
+            ret = future.result() if future else None
+        else:
+            ret = self.graph.search(self.start, self.end, thread)
+
         if ret != False and ret != None:
             path = [self.title(link) for link in ret]
             print(path)
@@ -195,6 +204,8 @@ def titleToLink(title):
 Receives user input for start and end articles
 """
 def userInput():
+    global thread
+
     start = input("Enter start wiki page title: ")
     startLink = titleToLink(start)
     if(not linkValid(startLink)):
@@ -210,15 +221,21 @@ def userInput():
         sys.exit
 
     print("\nStart: ", startLink, "\nEnd: ", endLink, "\n")
+
+    threadInput = input("Use additional threading? (y/n): ")
+    if threadInput.lower() == 'y':
+        thread = True
+
     time.sleep(1)
     
     path = Wiki(titleToLink(start), titleToLink(end))
     asyncio.run(path.run())
 
-# userInput()
+thread = False
+userInput()
 
-start = "https://en.wikipedia.org/wiki/Whale_shark"
-end = "https://en.wikipedia.org/wiki/Organ_(biology)"
+# start = "https://en.wikipedia.org/wiki/Whale_shark"
+# end = "https://en.wikipedia.org/wiki/Organ_(biology)"
 
-whaleShark = Wiki(start, end)
-asyncio.run(whaleShark.run())
+# whaleShark = Wiki(start, end)
+# asyncio.run(whaleShark.run())

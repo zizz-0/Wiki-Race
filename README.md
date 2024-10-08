@@ -40,7 +40,7 @@ While adding a maximum number of nodes removes the aspect of just how complex th
 ![visualized graph](imgs/final_thresholdMaxEdgesSpringLayout.png)
 
 ## Current Status
-Currently, `wikiRace.py` is using A* Search with title lengths as estimate cost comparison. `wikiRace.py` is threaded with 20 max workers, and `aStar.py` is threaded with 10 max workers, but defaults to using no threading.
+Currently, `wikiRace.py` is using A* Search with title overlaps as estimate cost comparison. `wikiRace.py` is threaded with 20 max workers, and `aStar.py` is threaded with 10 max workers, but defaults to using no threading.
 
 ## Future Goals
 Continue optimizing the search heuristic and visualized graph.
