@@ -28,6 +28,34 @@ Since Wiki2vec took too long due to complexity, Wikipedia categories was tried a
 #### Title Overlap Heuristic
 By comparing title string overlap, no unneccesary complexity is added. The search that took the title lengths heuristic 2 seconds (Whale Shark > Filter Feeder > Organ (biology)) took title overlap between **2 and 9 seconds**. The biggest difference between this heuristic function and the title lengths is that title overlap *consistently* takes between **3-7 seconds**. Out of around 20 tests, the longest it took to search Whale Shark > Filter Feeder > Organ (biology) was **30 seconds**, which was an outlier. The second longest search was only 9.2 seconds. Compared to title lengths, which took anywhere from 2 to 45 seconds (and was not consistently low), using title overlap to calculate heuristics improved search time immensely.
 
+### Test Data and Average Times
+
+Switching from the original BFS to A* Search using title overlap for heuristics and optional threading resulted in a **decrease of around 60% average** per search.
+
+### Whale Shark > Mammal
+
+| A* Search | A* w/ Extra Threading | BFS  |
+| --------- | --------------------- | ---- |
+|    2.96   |         2.37          | 4.85 |
+|    2.46   |         2.51          | 5.20 |
+|    3.53   |         3.46          | 7.44 |
+
+### Whale Shark > Mammal
+
+| A* Search | A* w/ Extra Threading |  BFS   |
+| --------- | --------------------- | -------|
+|   10.32   |         28.68         | 30.09  |
+|   12.47   |         30.64         | 135.45 |
+|   10.29   |         34.40         | 50.64  |
+
+### Whale Shark > Formula One
+
+| A* Search  |  BFS   |
+| ---------- | ------ |
+|    55.24   | 208.38 |
+|   163.31   |  500   |
+
+
 ## Visualizing Graph
 After completing the search, the graph is visualized using ![NetworkX](https://networkx.org/) and ![Matplotlib Pyplot](https://matplotlib.org/3.5.3/api/_as_gen/matplotlib.pyplot.html). Because the search is so complex due to the threading, displaying all nodes makes the graph *very* unreadable. I tried out three different functions to see which was the easiest to read and made the most sense visually. I also added constraints, like setting a maximum number of nodes or a threshold for nodes based on heuristics.
 
