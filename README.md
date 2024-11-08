@@ -40,7 +40,7 @@ Switching from the original BFS to A* Search using title overlap for heuristics 
 |    2.46   |         2.51          | 5.20 |
 |    3.53   |         3.46          | 7.44 |
 
-#### Whale Shark > Mammal
+#### Whale Shark > Organ (Biology)
 
 | A* Search | A* w/ Extra Threading |  BFS   |
 | --------- | --------------------- | -------|
