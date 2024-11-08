@@ -32,7 +32,7 @@ By comparing title string overlap, no unneccesary complexity is added. The searc
 
 Switching from the original BFS to A* Search using title overlap for heuristics and optional threading resulted in a **decrease of around 60% average** per search.
 
-### Whale Shark > Mammal
+#### Whale Shark > Mammal
 
 | A* Search | A* w/ Extra Threading | BFS  |
 | --------- | --------------------- | ---- |
@@ -40,7 +40,7 @@ Switching from the original BFS to A* Search using title overlap for heuristics 
 |    2.46   |         2.51          | 5.20 |
 |    3.53   |         3.46          | 7.44 |
 
-### Whale Shark > Mammal
+#### Whale Shark > Mammal
 
 | A* Search | A* w/ Extra Threading |  BFS   |
 | --------- | --------------------- | -------|
@@ -48,7 +48,7 @@ Switching from the original BFS to A* Search using title overlap for heuristics 
 |   12.47   |         30.64         | 135.45 |
 |   10.29   |         34.40         | 50.64  |
 
-### Whale Shark > Formula One
+#### Whale Shark > Formula One
 
 | A* Search  |  BFS   |
 | ---------- | ------ |
