@@ -1,7 +1,6 @@
 # Wiki Race
 
 This program finds a path from one Wikipedia article to another using only hyperlinks.
-Still a work in progress.
 
 ---
 
@@ -69,6 +68,3 @@ While adding a maximum number of nodes removes the aspect of just how complex th
 
 ## Current Status
 Currently, `wikiRace.py` is using A* Search with title overlaps as estimate cost comparison. `wikiRace.py` is threaded with 20 max workers, and `aStar.py` is threaded with 10 max workers, but defaults to using no threading.
-
-## Future Goals
-Continue optimizing the search heuristic and visualized graph.
